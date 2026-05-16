@@ -7,10 +7,10 @@ import os
 from typing import Sequence
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, message_to_dict, messages_from_dict
-
+from rag_src.utils.pathTool import get_chathistory_path
 
 def get_history(session_id):
-    return FileChatMessageHistory(session_id, "./chat_history")
+    return FileChatMessageHistory(session_id, get_chathistory_path())
 
 
 class FileChatMessageHistory(BaseChatMessageHistory):

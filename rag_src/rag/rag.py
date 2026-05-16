@@ -4,10 +4,11 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough, RunnableWithMessageHistory
-from file_history_store import get_history
-from vector_stores import VectorStoreService
+from rag_src.file_history_store import get_history
+from rag_src.vector_stores import VectorStoreService
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain.chat_models import init_chat_model
+from rag_src.utils.pormptLoader import promptloaderservice
 import config_data as config
 
 def print_prompt(prompt):
@@ -26,10 +27,10 @@ class RagService:
             )
         )
 
+        systen_prompt = promptloaderservice()
         self.prompt_template = ChatPromptTemplate(
             [
-                ("system","以我提供的已知参考资料为主，"
-                          "简洁和专业的回答用户问题。如果参考资料没有相关内容，先直接回复：暂无相关资料，然后加上自己的建议。参考资料：{context}"),
+                ("system", systen_prompt),
                 ("system","并且我提供用户的对话历史记录，如下："),
                 MessagesPlaceholder("history"),
                 (
@@ -97,7 +98,7 @@ if __name__ == '__main__':
         }
     }
 
-    res = RagService().chain.invoke({"input": "针织毛衣如何保养？"}, session_config)
+    res = RagService().chain.invoke({"input": "针织毛衣如何保养？如果没有参考资料，请根据通用常识回答"}, session_config)
     print(res)
 
 
